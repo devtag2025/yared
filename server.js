@@ -19,9 +19,6 @@ const offerRoutes = require('./routes/offer');
 const respondRoutes = require('./routes/respond');
 const expireJobRoutes = require('./routes/expireJob');
 
-// Import services
-const { startExpiryJob } = require('./services/expiryJob');
-
 const app = express();
 
 // --- MIDDLEWARE ---
@@ -58,9 +55,11 @@ app.get('/health', async (req, res) => {
     }
 });
 
-// --- START CRON JOB ---
-// Don't start background cron in serverless environment. Keep for local dev optionally.
-// startExpiryJob();
+// --- CRON JOB ---
+// Cron jobs are managed separately via PM2 + node-cron (see services/cronJobs.js)
+// This is the API server only. The cron service runs in a separate process.
+// To run both: npm run dev (uses ecosystem.config.js)
+// Or manually: npm start (api only) and npm run cron (cron service only)
 
 // --- GRACEFUL SHUTDOWN ---
 process.on('SIGTERM', async () => {

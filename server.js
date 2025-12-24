@@ -18,6 +18,8 @@ const generateLinkRoutes = require('./routes/generateLink');
 const offerRoutes = require('./routes/offer');
 const respondRoutes = require('./routes/respond');
 const expireJobRoutes = require('./routes/expireJob');
+const tallyRoutes = require('./routes/tally');
+const stripeRoutes = require('./routes/stripe');
 
 const app = express();
 
@@ -37,6 +39,8 @@ app.use('/api', generateLinkRoutes);
 app.use('/', offerRoutes);
 app.use('/api', respondRoutes);
 app.use('/api', expireJobRoutes);
+app.use('/api', tallyRoutes);
+app.use('/api', stripeRoutes);
 
 // --- HEALTH CHECK ENDPOINT ---
 app.get('/health', async (req, res) => {

@@ -4,7 +4,7 @@ const crypto = require('crypto');
 
 // ⚠️ This must match the default secret in your server.js
 const SHARED_SECRET = 'Cleaners_R_Us_Secure_Key_998877'; 
-const API_URL = 'http://localhost:3000/api/generate-link';
+const API_URL = 'http://13.53.37.57:3000/api/generate-link';
 
 // 1. Define the simulation data
 const payload = {

@@ -1,27 +1,35 @@
 const axios = require('axios');
 const router = require('express').Router();
 
-router.post('/tally-submit', async (req, res) => {
+// CHANGED: Now listening for GET requests (Browser Redirects)
+router.get('/tally-submit', async (req, res) => {
     try {
-        // 1. Forward the Tally data to Make.com
+        // 1. "Mask" the data: Convert GET Query Params into the JSON Body Make expects
+        // This allows your existing Make scenario to keep working without changes.
+        const payload = {
+            data: {
+                // Tally passes params like ?email=...&name=...
+                // We wrap them in a 'fields' array or pass them directly depending on your Make setup.
+                // Simplest approach: Pass all query params as the data object.
+                ...req.query 
+            }
+        };
+
+        // 2. Forward to Make (Scenario 8141716)
+        // We still use POST to Make because your Make webhook expects data in the body.
         const makeResponse = await axios.post(
             'https://hook.eu2.make.com/1venloszyqu0nvf9w5xuqktp8w6l95op', 
-            req.body,
-            { timeout: 60000 } // Account for the 'Sleep' module in the flow
+            payload,
+            { timeout: 60000 }
         );
 
-        // 2. Log the response to confirm it's the HTML page
-        console.log("Response from Make received (HTML detected)");
-
+        // 3. Return the HTML Redirect Page from Make
         res.setHeader('Content-Type', 'text/html');
         return res.status(200).send(makeResponse.data);
 
     } catch (error) {
-        if (error.code === 'ECONNABORTED') {
-            return res.status(504).send("The automation took too long to respond.");
-        }
         console.error("Error in Tally Proxy:", error.message);
-        res.status(500).send("Internal Server Error");
+        res.status(500).send("Internal Server Error: " + error.message);
     }
 });
 
